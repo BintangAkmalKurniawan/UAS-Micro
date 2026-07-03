@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Deteksi Banjir</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body class="bg-slate-100 min-h-screen p-6 md:p-12 font-sans">
+
+    <div class="max-w-3xl mx-auto">
+        <header class="mb-8 text-center">
+            <h1 class="text-3xl font-extrabold text-blue-700">Sistem Deteksi Banjir Real-Time</h1>
+            <p class="text-gray-500 mt-2">Memantau ketinggian air secara langsung dari ESP32</p>
+        </header>
+
+        <div class="bg-white rounded-2xl shadow-md p-8 mb-8 text-center border-t-4 border-blue-500">
+            <h2 class="text-lg font-semibold text-gray-600 mb-2">Status Ketinggian Air Saat Ini</h2>
+            
+            <div id="status-indicator" class="text-5xl font-black text-gray-400 mb-4 transition-colors duration-300">
+                Memuat...
+            </div>
+            
+            <p class="text-gray-600 text-lg">
+                Nilai Sensor: <span id="water-level" class="font-bold text-black text-2xl">0</span>
+            </p>
+            <p class="text-sm text-gray-400 mt-4">Pembaruan Terakhir: <span id="last-update" class="font-medium">-</span></p>
+        </div>
+
+        <div class="bg-white rounded-2xl shadow-md overflow-hidden">
+            <div class="bg-gray-50 px-6 py-4 border-b border-gray-200">
+                <h2 class="text-lg font-semibold text-gray-700">Riwayat 5 Pemantauan Terakhir</h2>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="min-w-full text-left text-sm whitespace-nowrap">
+                    <thead class="tracking-wider bg-gray-100 text-gray-600">
+                        <tr>
+                            <th class="px-6 py-4 font-medium">Waktu Tercatat</th>
+                            <th class="px-6 py-4 font-medium">Nilai Ketinggian Air</th>
+                        </tr>
+                    </thead>
+                    <tbody id="history-table" class="divide-y divide-gray-100">
+                        </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- 1. KONFIGURASI SUPABASE ---
+        // GANTI string di bawah dengan URL dan Key dari Project Settings Anda
+        const SUPABASE_URL = 'https://pfutdoorahvwlgfublcb.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBmdXRkb29yYWh2d2xnZnVibGNiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODMwNjEzMDgsImV4cCI6MjA5ODYzNzMwOH0.-fYmBuXi0ZFLP8EKyPQXGu4_H0H6Gljya6jniIfp_Mg';
+
+        // PERBAIKAN: Namanya diubah menjadi supabaseClient
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        // --- 2. FUNGSI MENGAMBIL DATA ---
+        async function fetchData() {
+            try {
+                // PERBAIKAN: Panggil supabaseClient di sini
+                const { data, error } = await supabaseClient
+                    .from('report')
+                    .select('*')
+                    .order('created_at', { ascending: false })
+                    .limit(5);
+
+                if (error) throw error;
+
+                if (data && data.length > 0) {
+                    updateUI(data);
+                }
+            } catch (error) {
+                console.error('Gagal mengambil data:', error.message);
+                document.getElementById('status-indicator').innerText = "Koneksi Error";
+                document.getElementById('status-indicator').className = "text-5xl font-black text-yellow-500 mb-4";
+            }
+        }
+
+        // --- 3. FUNGSI MEMPERBARUI TAMPILAN WEB ---
+        function updateUI(data) {
+            const latestData = data[0]; 
+
+            // Update Angka Sensor
+            document.getElementById('water-level').innerText = latestData.tinggi_air;
+
+            // Update Logika Status 
+            const statusEl = document.getElementById('status-indicator');
+            if (latestData.tinggi_air > 1000) {
+                statusEl.innerText = "BAHAYA / BANJIR";
+                statusEl.className = "text-5xl font-black text-red-600 mb-4 animate-pulse";
+            } else {
+                statusEl.innerText = "AMAN";
+                statusEl.className = "text-5xl font-black text-green-500 mb-4";
+            }
+
+            // Update Waktu Pembaruan Terakhir
+            const dateObj = new Date(latestData.created_at);
+            document.getElementById('last-update').innerText = dateObj.toLocaleString('id-ID');
+
+            // Update Tabel Riwayat Bawah
+            const tbody = document.getElementById('history-table');
+            tbody.innerHTML = ''; 
+            
+            data.forEach(row => {
+                const rowDate = new Date(row.created_at).toLocaleString('id-ID');
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-gray-50";
+                tr.innerHTML = `
+                    <td class="px-6 py-4 text-gray-500">${rowDate}</td>
+                    <td class="px-6 py-4 font-bold text-gray-700">${row.tinggi_air}</td>
+                    <td class="px-6 py-4 font-bold text-gray-700">${row.status}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        // --- 4. JALANKAN OTOMATIS ---
+        fetchData(); 
+        setInterval(fetchData, 3000); 
+    </script>
+</body>
+</html>

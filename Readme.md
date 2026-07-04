@@ -4,7 +4,9 @@ Kelompok 5 :
 - Muhammad Arfana Firjatullah (23552011315)
 
 Link Video Penjelasan:
-https://youtu.be/exp0aNJhhoU?si=KeMQ5Nq8ueTS2viv
+YouTube: https://youtu.be/exp0aNJhhoU?si=KeMQ5Nq8ueTS2viv
+
+LinkedIn: https://www.linkedin.com/posts/muhammad-arfana-firjatullah-b91623263_aware-iot-esp32-share-7479147505180639232-0LOn/?utm_source=share&utm_medium=member_android&rcm=ACoAAECytN0B6H84s879aTf59pO4goig7QYxwnk
 
 Sistem Deteksi Banjir IoT (ESP32 + Supabase)
 

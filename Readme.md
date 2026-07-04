@@ -1,3 +1,8 @@
+Kelompok 5 : 
+- Bintang Akmal Kurniawan (23552011195)
+- Depi Muhammad Ramdhani (23552011088)
+- Muhammad Arfana Firjatullah (23552011315)
+
 Link Video Penjelasan:
 https://youtu.be/exp0aNJhhoU?si=KeMQ5Nq8ueTS2viv
 

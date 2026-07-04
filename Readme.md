@@ -1,3 +1,6 @@
+Link Video Penjelasan:
+https://youtu.be/exp0aNJhhoU?si=KeMQ5Nq8ueTS2viv
+
 Sistem Deteksi Banjir IoT (ESP32 + Supabase)
 
 Sistem Deteksi Banjir IoT adalah platform pemantauan ketinggian air cerdas yang dirancang untuk memberikan peringatan dini secara lokal dan pemantauan data secara real-time via dashboard web. Sistem ini mengintegrasikan pengolahan data lokal, logika cloud, dan visualisasi data yang responsif.
